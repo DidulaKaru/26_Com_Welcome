@@ -1,0 +1,26 @@
+{
+  "name": "26_com_welcome",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DidulaKaru/26_Com_Welcome.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/DidulaKaru/26_Com_Welcome/issues"
+  },
+  "homepage": "https://github.com/DidulaKaru/26_Com_Welcome#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}
