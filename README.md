@@ -1,117 +1,146 @@
-# State-Driven Modular Vault Siege
+<p align="center">
+  <img src="client/public/favicon.svg" alt="Vault Siege" width="80" />
+</p>
 
-This repository contains the core infrastructure for the **Computer Engineering Orientation Vault Siege**. It is built using a **State Machine Architecture** on an Express backend and a **Dynamic Component Rendering** engine on a React/Vite frontend.
+<h1 align="center">Vault Siege</h1>
 
-The application functions as a sequential gateway. The backend holds the absolute "truth" of the current global state. As groups solve puzzles, the backend state index increments, and all connected frontend clients instantly morph their UI to match the new era. Every participant sees the exact same interface at all times.
+<p align="center">
+  <strong>A state-driven, multi-era puzzle gateway for Computer Engineering orientation events.</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen?style=flat-square" alt="Node" />
+  <img src="https://img.shields.io/badge/react-19-61DAFB?style=flat-square&logo=react&logoColor=white" alt="React" />
+  <img src="https://img.shields.io/badge/express-5-000000?style=flat-square&logo=express&logoColor=white" alt="Express" />
+  <img src="https://img.shields.io/badge/tailwind-3-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind" />
+  <img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License" />
+</p>
+
+---
+
+## Overview
+
+A sequential gateway application where the backend holds the single source of truth for global state. As groups solve puzzles, the state index increments and **every connected client instantly morphs** to match the new era — all participants see the exact same interface at all times.
 
 ---
 
 ## Table of Contents
 
-- [System Architecture](#1-system-architecture)
-- [Project Structure](#2-project-structure)
-- [Era Sequence & Puzzle Details](#3-era-sequence--puzzle-details)
-- [API Reference](#4-api-reference)
-- [Getting Started](#5-getting-started)
-- [Known Issues & Bugs](#6-known-issues--bugs)
-- [How to Add a New Puzzle](#7-how-to-add-a-new-puzzle)
+- [Architecture](#architecture)
+- [Project Structure](#project-structure)
+- [Era Sequence](#era-sequence)
+- [API Reference](#api-reference)
+- [Getting Started](#getting-started)
+- [Configuration](#configuration)
+- [Adding a New Puzzle](#adding-a-new-puzzle)
+- [License](#license)
 
 ---
 
-## 1. System Architecture
+## Architecture
 
 ```
-┌─────────────────────────────┐       Polls every 2s        ┌─────────────────────────────────┐
-│       Express Backend       │ ◄──── GET /system-state ──── │     React/Vite Frontend          │
-│       (Port 5000)           │                              │     (Port 5173)                  │
-│                             │                              │                                  │
-│  systemLayers[] ──► index   │ ◄──── POST /bypass-layer ──► │  App.jsx switch(themeState)       │
-│  puzzleRegistry.findPuzzle()│                              │    ├─ MechanicalView (ERA 1)     │
-│  activeUsers Map (siege)    │ ◄──── POST /siege-ping ────  │    ├─ AnalogView    (ERA 2)      │
-│  config.js (rate/attack)    │ ◄──── GET /config-status ──  │    ├─ OpenSourceView (ERA 3)     │
-│                             │                              │    ├─ CloudSiegeView (ERA 4)     │
-└─────────────────────────────┘                              │    └─ WelcomeScreen  (FINAL)     │
-                                                             └─────────────────────────────────┘
+┌──────────────────────────┐     Polls every 2s       ┌──────────────────────────────┐
+│     Express Backend      │ ◄── GET /system-state ── │     React / Vite Frontend    │
+│     (Port 5000)          │                          │     (Port 5173)              │
+│                          │                          │                              │
+│  systemLayers[] → index  │ ◄── POST /bypass-layer → │  App.jsx switch(themeState)  │
+│  puzzleRegistry          │                          │    ├─ MechanicalView (ERA 1) │
+│  activeUsers Map (siege) │ ◄── POST /siege-ping ──  │    ├─ AnalogView     (ERA 2) │
+│  config.js (rate/attack) │ ◄── GET /config-status ─ │    ├─ OpenSourceView (ERA 3) │
+│                          │                          │    ├─ CloudSiegeView (ERA 4) │
+└──────────────────────────┘                          │    └─ WelcomeScreen  (FINAL) │
+                                                      └──────────────────────────────┘
 ```
 
-### Core Concepts
+**Core concepts:**
 
-1. **The State Array (`server.js`)**: A linear array named `systemLayers` defines the sequence of the event. A single mutable `activeLayerIndex` integer tracks the current position globally.
-2. **The Polling Engine (`App.jsx`)**: The React frontend pings `GET /api/v1/system-state` every 2 seconds. It does not store its own routing state; it strictly renders whatever UI component matches the server's current `theme` string.
-3. **The Plugin Registry (`puzzleRegistry.js`)**: Puzzle logic is strictly separated from the server routing logic. When a user submits an answer via `POST /api/v1/bypass-layer`, the server looks up the active puzzle in the registry and delegates the evaluation to that specific isolated module.
-4. **The Config Bridge (`config.js`)**: A shared config file (`config.js`) at the project root controls `MAX_RATE_LIMIT` and `ATTACK_MODE_ENABLED`. Era 3 (Open Source) requires participants to modify these values on the live repository and submit a PR. The frontend polls `GET /api/v1/config-status` to detect the change.
+| Concept | Description |
+|---------|-------------|
+| **State Array** | `systemLayers` in `server/index.js` — a linear array with a mutable `activeLayerIndex` |
+| **Polling Engine** | `App.jsx` pings `/api/v1/system-state` every 2 s and renders the matching component |
+| **Plugin Registry** | `puzzleRegistry.js` maps layer IDs to isolated validation modules |
+| **Config Bridge** | `server/config.js` — ERA 3 requires participants to modify this via a PR |
 
 ---
 
-## 2. Project Structure
+## Project Structure
 
 ```
 26_Com_Welcome/
-├── server.js                     # Express backend — state machine, API routes, heartbeat loop
-├── config.js                     # Mutable config (ERA 3 puzzle target)
-├── package.json                  # Root dependencies (express, cors)
 │
-├── puzzles/                      # Backend puzzle validation modules
-│   ├── puzzleRegistry.js         # Central lookup — maps layer IDs to validators
-│   ├── era1-punchcards.js        # Validates: "LAB03_SHELF2"
-│   ├── era2-audio.js             # Validates: "harmonics_440hz"
-│   ├── era3-github.js            # Validates: { attackModeEnabled: true, maxRateLimit: >= 200 }
-│   └── era4-siege.js             # Validates: { overrideKey: "OVERLOAD_CORE_2026" }
+├── server/                           # ── Backend ──
+│   ├── index.js                      # Express app — state machine, API routes, heartbeat
+│   ├── config.js                     # Mutable config (ERA 3 puzzle target)
+│   ├── package.json                  # Server deps (express, cors)
+│   └── puzzles/                      # Puzzle validation modules
+│       ├── puzzleRegistry.js         # Central lookup — maps layer IDs → validators
+│       ├── era1-punchcards.js        # Validates: "LAB03_SHELF2"
+│       ├── era2-audio.js             # Validates: "harmonics_440hz"
+│       ├── era3-github.js            # Validates: config flag check
+│       └── era4-siege.js             # Validates: "OVERLOAD_CORE_2026"
 │
-├── client/                       # React + Vite frontend
-│   ├── package.json              # Client dependencies (react, tailwindcss v3, vite)
-│   ├── .env                      # Environment config (VITE_API_URL)
+├── client/                           # ── Frontend ──
+│   ├── index.html                    # HTML entry
+│   ├── package.json                  # Client deps (react, tailwindcss v3, vite)
 │   ├── vite.config.js
 │   ├── tailwind.config.js
 │   ├── postcss.config.js
+│   ├── eslint.config.js
+│   ├── public/
+│   │   ├── favicon.svg
+│   │   └── icons.svg
 │   └── src/
-│       ├── main.jsx              # App entry point
-│       ├── App.jsx               # State polling + theme-based component switch
-│       ├── index.css             # Tailwind directives (@tailwind base/components/utilities)
+│       ├── main.jsx                  # App entry point
+│       ├── App.jsx                   # State polling + theme-based component switch
+│       ├── index.css                 # Tailwind directives
 │       └── components/
-│           ├── MechanicalView.jsx   # ERA 1 — Punchcard decoder input
-│           ├── AnalogView.jsx       # ERA 2 — Audio spectrogram key input
-│           ├── OpenSourceView.jsx   # ERA 3 — Terminal UI, polls config-status
-│           ├── CloudSiegeView.jsx   # ERA 4 — Heartbeat pinger, live connection counter
-│           └── WelcomeScreen.jsx    # Final — "System Accessed" celebration screen
+│           ├── MechanicalView.jsx    # ERA 1 — Punchcard decoder
+│           ├── AnalogView.jsx        # ERA 2 — Audio spectrogram
+│           ├── OpenSourceView.jsx    # ERA 3 — Terminal UI, polls config-status
+│           ├── CloudSiegeView.jsx    # ERA 4 — Heartbeat pinger
+│           └── WelcomeScreen.jsx     # Final — "System Accessed" celebration
 │
-├── .gitignore                    # Excludes node_modules, dist, .env, .DS_Store
-└── .vscode/
-    └── settings.json             # Suppresses CSS @tailwind lint warnings
+├── .vscode/
+│   └── settings.json                 # Suppresses CSS @tailwind lint warnings
+├── .gitignore
+├── LICENSE
+└── README.md
 ```
 
 ---
 
-## 3. Era Sequence & Puzzle Details
+## Era Sequence
 
-| Index | Layer ID     | Theme              | Component           | Puzzle Mechanic                                                                                                |
-|-------|--------------|--------------------|--------------------|----------------------------------------------------------------------------------------------------------------|
-| 0     | `punchcards` | `ERA_MECHANICAL`   | `MechanicalView`   | Decode physical Hollerith punchcards via binary-to-ASCII. Submit `LAB03_SHELF2`.                               |
-| 1     | `audio`      | `ERA_ANALOG`       | `AnalogView`       | Analyze a distorted audio file in a spectrogram tool. Submit `harmonics_440hz`.                                |
-| 2     | `github`     | `ERA_OPEN_SOURCE`  | `OpenSourceView`   | Fork the repo, change `config.js` (`ATTACK_MODE_ENABLED=true`, `MAX_RATE_LIMIT≥200`), submit a PR.            |
-| 3     | `siege`      | `ERA_CLOUD_SIEGE`  | `CloudSiegeView`   | Keep browsers open — all participants must maintain a heartbeat. Threshold: 200 concurrent connections.        |
-| 4     | `unlocked`   | `SYSTEM_ACCESSED`  | `WelcomeScreen`    | Final celebration state. No puzzle.                                                                           |
+| # | Layer ID | Theme | Component | Puzzle |
+|---|----------|-------|-----------|--------|
+| 0 | `punchcards` | `ERA_MECHANICAL` | `MechanicalView` | Decode Hollerith punchcards → submit `LAB03_SHELF2` |
+| 1 | `audio` | `ERA_ANALOG` | `AnalogView` | Analyze distorted audio in a spectrogram → submit `harmonics_440hz` |
+| 2 | `github` | `ERA_OPEN_SOURCE` | `OpenSourceView` | Fork repo, set `ATTACK_MODE_ENABLED=true` & `MAX_RATE_LIMIT≥200` in `server/config.js`, submit PR |
+| 3 | `siege` | `ERA_CLOUD_SIEGE` | `CloudSiegeView` | Keep 200 concurrent browser connections alive via heartbeat |
+| 4 | `unlocked` | `SYSTEM_ACCESSED` | `WelcomeScreen` | 🎉 Celebration — no puzzle |
 
-### How Era 3 → Era 4 Transition Works
+### ERA 3 → ERA 4 Transition
 
-1. `OpenSourceView` polls `GET /api/v1/config-status` every 3 seconds.
-2. When the server responds with `attackMode === true` AND `rateLimit >= 200`, the frontend auto-submits `POST /api/v1/bypass-layer` with `{ attackModeEnabled: true, maxRateLimit: 200 }`.
-3. `era3-github.js` validates `attackModeEnabled === true && maxRateLimit >= 200` and returns success, advancing the state to `ERA_CLOUD_SIEGE`.
+1. `OpenSourceView` polls `GET /api/v1/config-status` every 3 s.
+2. When `attackMode === true` AND `rateLimit >= 200`, the frontend auto-submits the bypass.
+3. `era3-github.js` validates and advances to `ERA_CLOUD_SIEGE`.
 
-### How Era 4 (Siege) Works
+### ERA 4 (Siege) Mechanics
 
 1. Each browser generates a random `clientId` on mount.
-2. `CloudSiegeView` sends `POST /api/v1/siege-ping` with `{ clientId }` every 2 seconds.
-3. The server stores each `clientId` in an `activeUsers` Map with its last ping timestamp.
-4. A 1-second `setInterval` loop on the server prunes any client that hasn't pinged within 5 seconds.
-5. When `activeConnections >= targetThreshold`, the `activeLayerIndex` increments to `SYSTEM_ACCESSED`.
+2. `CloudSiegeView` pings `POST /api/v1/siege-ping` every 2 s.
+3. Server prunes clients that haven't pinged within 5 s.
+4. When `activeConnections >= 200`, state advances to `SYSTEM_ACCESSED`.
 
 ---
 
-## 4. API Reference
+## API Reference
 
 ### `GET /api/v1/system-state`
-Returns the current global state. Polled by all clients every 2 seconds.
+
+Returns the current global state. Polled by all clients.
+
 ```json
 {
   "currentLayer": { "id": "punchcards", "theme": "ERA_MECHANICAL" },
@@ -119,120 +148,115 @@ Returns the current global state. Polled by all clients every 2 seconds.
   "metrics": null
 }
 ```
-When on the `siege` layer, `metrics` includes:
-```json
-{
-  "activeConnections": 42,
-  "targetThreshold": 200
-}
-```
+
+On the `siege` layer, `metrics` includes `{ "activeConnections": 42, "targetThreshold": 200 }`.
 
 ### `POST /api/v1/bypass-layer`
-Submit a puzzle answer to attempt layer advancement.
-- **Body**: `{ "submission": <string | object> }`
-- **200**: `{ "status": "STATE UPGRADED", "nextLayer": {...} }`
-- **400**: `{ "status": "DENIED", "message": "..." }`
+
+Submit a puzzle answer.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `submission` | `string \| object` | The puzzle answer |
+
+**200** → `{ "status": "STATE UPGRADED", "nextLayer": {...} }`
+**400** → `{ "status": "DENIED", "message": "..." }`
 
 ### `POST /api/v1/siege-ping`
-Heartbeat endpoint for Era 4. Registers/refreshes a client's connection.
-- **Body**: `{ "clientId": "abc123" }`
-- **200**: `{ "status": "ACKNOWLEDGED" }`
-- **400**: Returned if not currently on the siege layer.
+
+ERA 4 heartbeat. Registers/refreshes a client connection.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `clientId` | `string` | Unique browser identifier |
 
 ### `GET /api/v1/config-status`
-Exposes the live `config.js` values (cache-busted on every request). Polled by `OpenSourceView` during Era 3.
+
+Exposes live `server/config.js` values (cache-busted). Polled during ERA 3.
+
 ```json
-{
-  "attackMode": true,
-  "rateLimit": 200
-}
+{ "attackMode": true, "rateLimit": 200 }
 ```
 
 ---
 
-## 5. Getting Started
+## Getting Started
 
 ### Prerequisites
-- Node.js (v18+)
-- npm
 
-### Installation
+- Node.js v18+
+
+### Install
 
 ```bash
-# Clone the repository
 git clone https://github.com/DidulaKaru/26_Com_Welcome.git
 cd 26_Com_Welcome
 
-# Install backend dependencies
+# Install server dependencies
+cd server
 npm install
 
-# Install frontend dependencies
-cd client
+# Install client dependencies
+cd ../client
 npm install
 ```
 
-### Environment Configuration
-
-The frontend reads the API base URL from a `.env` file in the `client/` directory. A default is already provided:
-
-```env
-# client/.env
-VITE_API_URL=http://localhost:5000
-```
-
-For LAN or production deployment, update this to the server's accessible address (e.g., `http://192.168.1.100:5000`).
-
-### Running
+### Run
 
 Open **two terminals**:
 
 ```bash
-# Terminal 1 — Start the backend
-node server.js
-# Output: Vault Engine running on port 5000
+# Terminal 1 — Backend
+cd server
+npm start
+# → Vault Engine running on port 5000
 
-# Terminal 2 — Start the frontend
+# Terminal 2 — Frontend
 cd client
 npm run dev
-# Output: http://localhost:5173/
+# → http://localhost:5173/
+```
+
+For auto-restart on file changes:
+
+```bash
+cd server
+npm run dev   # node --watch index.js
 ```
 
 ---
 
-## 6. Resolved Issues Changelog
+## Configuration
 
-All previously identified issues have been resolved. Below is a log of what was fixed.
+### Environment Variables
 
-| Issue | Resolution |
-|---|---|
-| Era 3 payload shape mismatch (`overrideKey` vs `attackModeEnabled`) | `OpenSourceView` now sends `{ attackModeEnabled: true, maxRateLimit: 200 }` matching `era3-github.js` |
-| Era 3 `maxRateLimit` threshold mismatch (5000 vs 200) | `era3-github.js` updated to accept `maxRateLimit >= 200` |
-| Era 3 config gate condition removed (bypass fired unconditionally) | Conditional `if (data.attackMode === true && data.rateLimit >= 200)` restored in `OpenSourceView` |
-| `config.js` shipped with post-solve values | Reset to `MAX_RATE_LIMIT: 1`, `ATTACK_MODE_ENABLED: false` (event-ready) |
-| Siege threshold coupled to `config.MAX_RATE_LIMIT` | Hardcoded to `targetThreshold: 200` in `server.js`, fully decoupled |
-| `config.js` cached by `require()` — no live reload | `/api/v1/config-status` now busts the cache via `delete require.cache` before re-requiring |
-| Hardcoded `localhost:5000` URLs in all components | All fetch calls use `import.meta.env.VITE_API_URL` with `localhost:5000` fallback. `.env` file added to `client/` |
-| No `.gitignore` file | Added `.gitignore` with `node_modules/`, `client/dist/`, `.env`, `.DS_Store` |
-| Unused `App.css` leftover from Vite scaffold | Deleted |
+| Variable | Location | Default | Description |
+|----------|----------|---------|-------------|
+| `PORT` | Server | `5000` | Backend port |
+| `VITE_API_URL` | `client/.env` | `http://localhost:5000` | API base URL for frontend |
+
+For LAN deployment, update `VITE_API_URL` to the server's accessible address (e.g. `http://192.168.1.100:5000`).
+
+### Puzzle Config (`server/config.js`)
+
+```js
+module.exports = {
+    MAX_RATE_LIMIT: 1,            // ERA 3 target: change to >= 200
+    ATTACK_MODE_ENABLED: false    // ERA 3 target: change to true
+};
+```
 
 ---
 
-## 7. How to Add a New Puzzle
+## Adding a New Puzzle
 
-To add a new era/layer to the event, update both the backend logic and the frontend UI.
+### 1. Create the validator
 
-### Backend
-
-**Step 1: Create the Validation Module**
-
-Create a new file in `puzzles/` (e.g., `puzzles/era5-networking.js`). Export a single `validate` function:
-
-```javascript
-// puzzles/era5-networking.js
+```js
+// server/puzzles/era5-networking.js
 module.exports = {
     validate: (submission) => {
-        const normalized = submission?.trim().toUpperCase();
-        if (normalized === "SUBNET_MASK_255") {
+        if (submission?.trim().toUpperCase() === "SUBNET_MASK_255") {
             return { success: true };
         }
         return { success: false, message: "Invalid network configuration." };
@@ -240,45 +264,48 @@ module.exports = {
 };
 ```
 
-**Step 2: Register the Puzzle**
+### 2. Register it
 
-Add it to `puzzles/puzzleRegistry.js`:
-
-```javascript
+```js
+// server/puzzles/puzzleRegistry.js
 const era5Networking = require('./era5-networking');
 
 const puzzles = {
-    // ... existing entries
+    // ... existing
     "networking": era5Networking
 };
 ```
 
-**Step 3: Add the Layer to the State Array**
+### 3. Add the layer
 
-Insert the new layer into `systemLayers` in `server.js` (before `unlocked`):
-
-```javascript
-const systemLayers = [
-    // ... existing layers
-    { id: "networking", theme: "ERA_NETWORKING" },
-    { id: "unlocked", theme: "SYSTEM_ACCESSED" }
-];
+```js
+// server/index.js — insert before "unlocked"
+{ id: "networking", theme: "ERA_NETWORKING" },
 ```
 
-### Frontend
+### 4. Create the frontend view
 
-**Step 4: Create the View Component**
-
-Create `client/src/components/NetworkingView.jsx` with the themed UI and submission form.
-
-**Step 5: Register in App.jsx**
-
-Add the import and a new `case` in the `switch(themeState)` block:
+Create `client/src/components/NetworkingView.jsx`, then add the case in `App.jsx`:
 
 ```jsx
-import NetworkingView from './components/NetworkingView';
-
-// Inside the switch:
 case "ERA_NETWORKING":
     return <NetworkingView onBreach={fetchState} />;
 ```
+
+---
+
+## Resolved Issues
+
+| Issue | Resolution |
+|-------|-----------|
+| ERA 3 payload shape mismatch | `OpenSourceView` sends `{ attackModeEnabled, maxRateLimit }` matching `era3-github.js` |
+| ERA 3 threshold mismatch | `era3-github.js` accepts `maxRateLimit >= 200` |
+| `config.js` cached by `require()` | `/config-status` busts cache via `delete require.cache` |
+| Hardcoded `localhost` URLs | All fetch calls use `import.meta.env.VITE_API_URL` with fallback |
+| Siege threshold coupled to config | Hardcoded `targetThreshold: 200` in server, fully decoupled |
+
+---
+
+## License
+
+[MIT](LICENSE)
