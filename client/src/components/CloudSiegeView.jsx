@@ -57,6 +57,19 @@ export default function CloudSiegeView({ metrics }) {
                     <p className="leading-relaxed drop-shadow-[0_0_5px_rgba(254,202,202,0.3)] text-red-100">
                         [THE SYSTEM IS MEASURING THE COLLECTIVE RESOLVE OF THE <span className="text-green-400 font-bold">'PLAYERS'</span>.]
                     </p>
+                    <p className="text-yellow-300/80 text-xs uppercase tracking-widest leading-loose">
+                        Two men will not die;
+                        <br />
+                        the grappled boat will not sink
+                        <br />
+                        A three-ply towrope will not break.
+                        <br />
+                        If two assist one another, how can they fail?
+                    </p>
+                    <p className="text-white-300/80 text-xs uppercase tracking-widest leading-loose">
+                        - The Epic of Gilgamesh
+                    </p>
+
                     <p className="text-red-300/80 text-xs uppercase tracking-widest leading-loose">
                         Exactly 275 nodes must synchronize to stabilize the dimensional rift. Keep your interface active. If you choose not to accept, or if the connection severs, there will be a <span className="text-red-500 font-bold text-sm drop-shadow-[0_0_8px_rgba(220,38,38,1)]">[PENALTY]</span>.
                     </p>
