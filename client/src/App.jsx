@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import MechanicalView from './components/MechanicalView';
-import AnalogView from './components/AnalogView';
+import HashView from './components/HashView';
+import BookView from './components/BookView';
+import MorseView from './components/MorseView';
 import OpenSourceView from './components/OpenSourceView';
 import CloudSiegeView from './components/CloudSiegeView';
 import WelcomeScreen from './components/WelcomeScreen';
@@ -21,7 +23,6 @@ export default function App() {
 
     useEffect(() => {
         fetchState();
-        // Continuous polling for real-time morphing updates across all devices
         const interval = setInterval(fetchState, 2000);
         return () => clearInterval(interval);
     }, []);
@@ -29,8 +30,12 @@ export default function App() {
     switch (themeState) {
         case "ERA_MECHANICAL":
             return <MechanicalView onBreach={fetchState} />;
-        case "ERA_ANALOG":
-            return <AnalogView onBreach={fetchState} />;
+        case "ERA_HASH":
+            return <HashView onBreach={fetchState} />;
+        case "ERA_ARCHIVE":
+            return <BookView onBreach={fetchState} />;
+        case "ERA_MORSE":
+            return <MorseView onBreach={fetchState} />;
         case "ERA_OPEN_SOURCE":
             return <OpenSourceView onBreach={fetchState} />;
         case "ERA_CLOUD_SIEGE":

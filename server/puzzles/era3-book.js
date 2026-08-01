@@ -5,11 +5,10 @@ module.exports = {
         }
 
         const normalized = submission.trim();
-        // Target string from the decoded punch card ASCII binary format
-        if (normalized === "D:\\Nothing\\.git\\config") {
+        if (normalized === "10.50.80.5") {
             return { success: true };
         }
 
-        return { success: false, message: "Incorrect path configuration string." };
+        return { success: false, message: "Incorrect IPv4 address sequence." };
     }
 };

@@ -35,7 +35,7 @@ export default function MechanicalView({ onBreach }) {
                             value={input}
                             onChange={(e) => { setInput(e.target.value); setError(''); }}
                             className="w-full bg-black border border-amber-600 p-2 text-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-400 placeholder-amber-800 font-mono uppercase"
-                            placeholder="E.G. LABXX_XXXXX"
+                            placeholder="Enter the string you've got. This is not case sensitive"
                             autoFocus
                         />
                     </div>

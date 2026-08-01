@@ -1,13 +1,17 @@
 const era1Punchcards = require('./era1-punchcards');
-const era2Audio = require('./era2-audio');
-const era3Github = require('./era3-github');
-const era4Siege = require('./era4-siege');
+const era2Hash = require('./era2-hash');
+const era3Book = require('./era3-book');     // NEW
+const era4Morse = require('./era4-morse');   // Renamed
+const era5Github = require('./era5-github'); // Renamed
+const era6Siege = require('./era6-siege');   // Renamed
 
 const puzzles = {
     "punchcards": era1Punchcards,
-    "audio": era2Audio,
-    "github": era3Github,
-    "siege": era4Siege
+    "hash": era2Hash,
+    "book": era3Book,
+    "morse": era4Morse,
+    "github": era5Github,
+    "siege": era6Siege
 };
 
 function findPuzzle(layerId) {
