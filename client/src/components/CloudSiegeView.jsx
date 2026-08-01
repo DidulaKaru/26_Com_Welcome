@@ -24,51 +24,82 @@ export default function CloudSiegeView({ metrics }) {
         : 0;
 
     return (
-        <div className="min-h-screen bg-neutral-950 text-red-500 font-mono p-8 selection:bg-red-900 selection:text-white">
-            <div className="max-w-4xl mx-auto border-2 border-red-700 bg-black p-6 rounded shadow-[0_0_40px_rgba(220,38,38,0.3)] space-y-8">
-                <div className="flex items-center justify-between border-b border-red-800 pb-4">
-                    <div>
-                        <h1 className="text-3xl font-black tracking-tighter uppercase text-red-600 animate-pulse">
-                            [CRITICAL ALERT] ERA_CLOUD_SIEGE ACTIVE
-                        </h1>
-                        <p className="text-xs text-stone-400 mt-1">DISTRIBUTED CONCURRENCY INFRASTRUCTURE MATRIX</p>
-                    </div>
-                    <div className="text-right flex flex-col items-end">
-                        <span className="text-xs px-2 py-1 bg-red-950 border border-red-700 text-red-400 rounded font-bold animate-ping mb-1">
-                            CONNECTION LIVE
+        <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6 font-sans text-red-100 selection:bg-red-900/50 relative overflow-hidden">
+            {/* Background Void/Smoke Effect - Tinted Red for Emergency */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(153,27,27,0.15)_0%,rgba(2,6,23,1)_100%)] pointer-events-none"></div>
+
+            {/* Main System Panel */}
+            <div className="max-w-3xl w-full bg-slate-900/40 backdrop-blur-md border-2 border-red-600 shadow-[0_0_30px_rgba(220,38,38,0.3)] p-8 relative z-10 animate-[pulse_4s_ease-in-out_infinite]">
+
+                {/* Tech/Game UI Corner Accents - Red */}
+                <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-red-400"></div>
+                <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-red-400"></div>
+                <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-red-400"></div>
+                <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-red-400"></div>
+
+                {/* Header */}
+                <div className="flex flex-col items-center mb-8 border-b border-red-600/30 pb-6">
+                    <div className="flex items-center gap-3 mb-2">
+                        <span className="w-6 h-6 flex items-center justify-center rounded-full border-2 border-red-500 text-red-500 text-sm font-bold shadow-[0_0_15px_rgba(220,38,38,0.8)] animate-ping">
+                            !
                         </span>
-                        <span className="text-[10px] text-red-800">NODE ID: {clientId.toUpperCase()}</span>
+                        <h1 className="text-3xl font-black uppercase tracking-widest text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]">
+                            EMERGENCY QUEST
+                        </h1>
+                    </div>
+                    <h2 className="text-xs font-semibold tracking-[0.3em] text-red-400 uppercase">
+                        [TRIAL: SYSTEM OVERLOAD]
+                    </h2>
+                </div>
+
+                {/* Narrative / Instructions */}
+                <div className="space-y-6 mb-10 text-center text-sm font-medium tracking-wider">
+                    <p className="leading-relaxed drop-shadow-[0_0_5px_rgba(254,202,202,0.3)] text-red-100">
+                        [THE SYSTEM IS MEASURING THE COLLECTIVE RESOLVE OF THE <span className="text-green-400 font-bold">'PLAYERS'</span>.]
+                    </p>
+                    <p className="text-red-300/80 text-xs uppercase tracking-widest leading-loose">
+                        Exactly 275 nodes must synchronize to stabilize the dimensional rift. Keep your interface active. If you choose not to accept, or if the connection severs, there will be a <span className="text-red-500 font-bold text-sm drop-shadow-[0_0_8px_rgba(220,38,38,1)]">[PENALTY]</span>.
+                    </p>
+                </div>
+
+                {/* Live Synchronization Tracker */}
+                <div className="border border-red-600/50 bg-red-950/30 p-8 rounded-sm text-center relative overflow-hidden mb-8 shadow-[inset_0_0_20px_rgba(220,38,38,0.2)]">
+                    <div className="text-xs text-red-400 uppercase tracking-[0.2em] mb-4 font-bold">
+                        Live Player Synchronization
+                    </div>
+                    <div className="text-7xl font-black text-white drop-shadow-[0_0_20px_rgba(220,38,38,0.8)] tabular-nums tracking-tighter">
+                        {metrics ? metrics.activeConnections : 0}
+                        <span className="text-2xl text-red-600 ml-2 tracking-normal">/ {metrics?.targetThreshold || 275}</span>
+                    </div>
+
+                    {/* Node ID Marker */}
+                    <div className="absolute top-3 right-3 text-[10px] text-red-500/60 tracking-widest font-mono">
+                        ID: {clientId.toUpperCase()}
+                    </div>
+                    {/* Active Ping Indicator */}
+                    <div className="absolute top-3 left-3 flex items-center gap-2 text-[10px] text-red-500/60 tracking-widest">
+                        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_5px_rgba(220,38,38,0.8)]"></div>
+                        LINK LIVE
                     </div>
                 </div>
 
-                <div className="border border-red-900 bg-stone-950 p-8 rounded text-center">
-                    <div className="text-sm text-stone-400 uppercase tracking-widest mb-4">Live Concurrent Connections</div>
-                    <div className="text-7xl font-black text-white drop-shadow-[0_0_15px_rgba(220,38,38,0.8)]">
-                        {metrics ? metrics.activeConnections : 0} <span className="text-xl text-red-700">/ {metrics?.targetThreshold}</span>
-                    </div>
-                </div>
-
-                <div className="space-y-2">
-                    <div className="flex justify-between text-xs font-bold text-stone-400">
-                        <span>NETWORK LOAD SATURATION</span>
+                {/* Progress Bar (HP/MP Style) */}
+                <div className="space-y-3">
+                    <div className="flex justify-between text-xs font-bold text-red-400 tracking-widest uppercase">
+                        <span>Stabilization Rate</span>
                         <span>{progressPercentage.toFixed(1)}%</span>
                     </div>
-                    <div className="w-full bg-stone-900 h-8 rounded border border-red-900 overflow-hidden p-0.5">
+                    <div className="w-full bg-slate-950/80 h-6 border border-red-600/50 p-0.5 relative rounded-sm overflow-hidden">
                         <div
                             style={{ width: `${progressPercentage}%` }}
-                            className="bg-gradient-to-r from-red-800 via-red-500 to-orange-500 h-full transition-all duration-1000 ease-in-out"
-                        />
+                            className="bg-gradient-to-r from-red-800 to-red-500 h-full shadow-[0_0_15px_rgba(220,38,38,0.8)] transition-all duration-1000 ease-in-out relative"
+                        >
+                            {/* Inner glow effect for the bar */}
+                            <div className="absolute inset-0 bg-white/20 w-full h-1"></div>
+                        </div>
                     </div>
                 </div>
 
-                <div className="p-4 bg-zinc-900/50 border border-zinc-800 rounded text-center space-y-4">
-                    <p className="text-sm text-zinc-400 uppercase tracking-wider font-bold">
-                        ACTION PLAN: MAINTAIN CONNECTION
-                    </p>
-                    <p className="text-xs text-zinc-500">
-                        Keep this terminal open. To breach the final security matrix, exactly 200 nodes must maintain an active synchronization link simultaneously. Do not close your browser.
-                    </p>
-                </div>
             </div>
         </div>
     );

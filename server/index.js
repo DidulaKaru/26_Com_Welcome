@@ -18,7 +18,7 @@ const systemLayers = [
     { id: "unlocked", theme: "SYSTEM_ACCESSED" }
 ];
 
-let activeLayerIndex = 0;
+let activeLayerIndex = 6;
 
 // Locate this block in server/index.js
 let siegeMetrics = {
