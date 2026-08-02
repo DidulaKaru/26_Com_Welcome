@@ -20,6 +20,9 @@ const systemLayers = [
 
 let activeLayerIndex = 0;
 
+// Change this to go back to the first layer
+// activeLayerIndex = 0;
+
 // Locate this block in server/index.js
 let siegeMetrics = {
     activeConnections: 0,
