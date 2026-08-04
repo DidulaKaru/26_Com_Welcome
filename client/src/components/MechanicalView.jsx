@@ -54,7 +54,7 @@ export default function MechanicalView({ onBreach }) {
                         [THE SYSTEM REQUIRES THE <span className="text-green-400 font-bold">'PLAYER'</span> TO DECODE THE PHYSICAL FRAGMENTS.]
                     </p>
                     <p className="text-blue-300/70 text-xs uppercase tracking-widest">
-                        Translate the binary hole configurations via ASCII matrix. Input the resulting sequence to proceed.
+                        A primitive lock for your first trial. Analyze the physical fragments. Do not overcomplicate the mechanism: where the void exists, a signal passes; where the surface remains, there is silence. Each artifact holds two octets of data. Convert this fundamental machine tongue into the human alphabet to unlock the path.
                     </p>
                 </div>
 

@@ -71,7 +71,7 @@ export default function CloudSiegeView({ metrics }) {
                     </p>
 
                     <p className="text-red-300/80 text-xs uppercase tracking-widest leading-loose">
-                        Exactly 275 nodes must synchronize to stabilize the dimensional rift. Keep your interface active. If you choose not to accept, or if the connection severs, there will be a <span className="text-red-500 font-bold text-sm drop-shadow-[0_0_8px_rgba(220,38,38,1)]">[PENALTY]</span>.
+                        Exactly 275 Players must synchronize to stabilize the dimensional rift. Keep your interface active. If you choose not to accept, or if the connection severs, there will be a <span className="text-red-500 font-bold text-sm drop-shadow-[0_0_8px_rgba(220,38,38,1)]">[PENALTY]</span>.
                     </p>
                 </div>
 

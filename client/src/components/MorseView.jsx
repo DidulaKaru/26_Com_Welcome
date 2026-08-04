@@ -54,7 +54,7 @@ export default function MorseView({ onBreach }) {
                         [THE SYSTEM REQUIRES THE <span className="text-green-400 font-bold">'PLAYER'</span> TO INTERFACE WITH EXTERNAL HARDWARE.]
                     </p>
                     <p className="text-blue-300/70 text-xs uppercase tracking-widest leading-loose">
-                        Inspect the hardware breadboard station. The integrated circuit requires proper multimeter troubleshooting, transistor configuration, or LED bridging to isolate the pulse signal output from the microcontroller pin. Decode the Morse sequence to find the target location.
+                        A physical hardware node awaits your inspection. The Architect has embedded a localized transmission within the circuitry, but the signal remains trapped in the dark. Deploy your highest-tier embedded mage to manipulate the physical matrix and force the signal into the light. Decipher the temporal pulses to extract your next spatial coordinates.
                     </p>
                 </div>
 

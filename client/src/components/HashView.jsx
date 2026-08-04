@@ -54,7 +54,7 @@ export default function HashView({ onBreach }) {
                         [THE SYSTEM COMMANDS THE <span className="text-green-400 font-bold">'PLAYER'</span> TO EXECUTE THE CRYPTOGRAPHIC SCRIPT.]
                     </p>
                     <p className="text-blue-300/70 text-xs uppercase tracking-widest leading-loose">
-                        Feed the Hexadecimal keys extracted from the physical fragments into the artifact's seed sequence. Survive the algorithmic iterations to extract the true output hash.
+                        The System demands a display of computational endurance. Acquire the source artifact below. The System will not process this for you—you must compile and execute this foreign architecture on your local hardware. Inject the hexadecimal remnants salvaged from your previous trial to prime the seed sequence. Let your machine survive the millions of algorithmic iterations, and return the true cryptographic signature to proceed.
                     </p>
                 </div>
 

@@ -54,7 +54,7 @@ export default function BookView({ onBreach }) {
                         [THE SYSTEM HAS DETECTED MISSING KNOWLEDGE IN THE <span className="text-green-400 font-bold">'PLAYER'</span>.]
                     </p>
                     <p className="text-blue-300/70 text-xs uppercase tracking-widest leading-loose">
-                        Analyze the 4 physical literary excerpts provided to your unit. Locate the offline source material and extract the corresponding page numbers. Format sequentially to reveal the target IPv4 routing coordinates.
+                        You were handed the foundational manuscript to prepare for this trial, yet you discarded it. A fatal miscalculation. Take the four physical fragments and cross-reference them with the forgotten text. Extract the four page numbers and sequence them chronologically. The resulting coordinates will reveal the target IPv4 network path. Let us see if you can survive your own oversight.
                     </p>
                 </div>
 
