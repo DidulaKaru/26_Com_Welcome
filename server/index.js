@@ -265,6 +265,41 @@ app.get('/api/v1/claim-reward', (req, res) => {
     res.download(rewardPath, 'Go Ahead Open This.bat');
 });
 
+// ── Architect Broadcast ───────────────────────────────────
+// Message from the architect, controlled via environment variables.
+// Set ARCHITECT_MESSAGE to enable, ARCHITECT_ACTIVATED_AT to the ISO timestamp
+// when you want the 10-minute window to start counting from.
+// If ARCHITECT_ACTIVATED_AT is not set, it defaults to server boot time.
+const ARCHITECT_TTL_MS = 10 * 60 * 1000; // 10 minutes
+
+app.get('/api/v1/architect-broadcast', (req, res) => {
+    const message = process.env.ARCHITECT_MESSAGE;
+
+    if (!message) {
+        return res.json({ active: false });
+    }
+
+    // Parse activation time — defaults to server boot time if not set
+    const activatedAt = process.env.ARCHITECT_ACTIVATED_AT
+        ? new Date(process.env.ARCHITECT_ACTIVATED_AT).getTime()
+        : serverBootTime;
+
+    const expiresAt = activatedAt + ARCHITECT_TTL_MS;
+    const now = Date.now();
+
+    if (now >= expiresAt) {
+        return res.json({ active: false });
+    }
+
+    res.json({
+        active: true,
+        message: message,
+        expiresAt: expiresAt,
+        remainingMs: expiresAt - now
+    });
+});
+
+const serverBootTime = Date.now();
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Vault Engine running on port ${PORT}`);

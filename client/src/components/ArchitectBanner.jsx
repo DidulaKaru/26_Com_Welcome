@@ -1,33 +1,27 @@
 import React, { useState, useEffect } from 'react';
 
-const STORAGE_KEY = 'architect_banner_seen';
-const BANNER_DURATION_MS = 10 * 60 * 1000; // 10 minutes
+const DISMISS_KEY = 'architect_banner_dismissed';
 
 export default function ArchitectBanner() {
     const [visible, setVisible] = useState(false);
     const [fadeOut, setFadeOut] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(BANNER_DURATION_MS);
+    const [timeLeft, setTimeLeft] = useState(0);
+    const [message, setMessage] = useState('');
 
     useEffect(() => {
-        const stored = localStorage.getItem(STORAGE_KEY);
+        // If user already dismissed, don't even fetch
+        if (localStorage.getItem(DISMISS_KEY) === 'true') return;
 
-        if (stored) {
-            const expiresAt = parseInt(stored, 10);
-            const remaining = expiresAt - Date.now();
+        fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/v1/architect-broadcast`)
+            .then(res => res.json())
+            .then(data => {
+                if (!data.active || !data.message) return;
 
-            if (remaining <= 0) {
-                // Already expired — don't show
-                return;
-            }
-            // Resume with remaining time
-            setTimeLeft(remaining);
-            setVisible(true);
-        } else {
-            // First visit — set expiry timestamp and show
-            localStorage.setItem(STORAGE_KEY, String(Date.now() + BANNER_DURATION_MS));
-            setTimeLeft(BANNER_DURATION_MS);
-            setVisible(true);
-        }
+                setMessage(data.message);
+                setTimeLeft(data.remainingMs);
+                setVisible(true);
+            })
+            .catch(() => { /* Server unreachable — silently skip */ });
     }, []);
 
     // Countdown timer
@@ -39,7 +33,7 @@ export default function ArchitectBanner() {
                 const next = prev - 1000;
                 if (next <= 0) {
                     clearInterval(tick);
-                    dismiss();
+                    hide();
                     return 0;
                 }
                 return next;
@@ -50,6 +44,11 @@ export default function ArchitectBanner() {
     }, [visible]);
 
     const dismiss = () => {
+        localStorage.setItem(DISMISS_KEY, 'true');
+        hide();
+    };
+
+    const hide = () => {
         setFadeOut(true);
         setTimeout(() => setVisible(false), 500);
     };
@@ -75,9 +74,6 @@ export default function ArchitectBanner() {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 flex items-center justify-center rounded-full border border-yellow-400 text-yellow-400 text-[10px] font-bold shadow-[0_0_8px_rgba(250,204,21,0.5)]">
-                            ⚡
-                        </span>
                         <h3 className="text-yellow-400 text-xs font-bold tracking-[0.2em] uppercase">
                             [TRANSMISSION FROM THE ARCHITECT]
                         </h3>
@@ -96,13 +92,9 @@ export default function ArchitectBanner() {
                     </div>
                 </div>
 
-                {/* Message */}
-                <p className="text-blue-100 text-sm leading-relaxed font-mono">
-                    "Welcome, Player. You stand at the threshold of something far greater than a game. What lies ahead will test your intellect, your resolve, and your ability to work as one.
-                    <br /><br />
-                    The System does not forgive weakness. But those who endure — those who rise — will find that their growth has no ceiling.
-                    <br /><br />
-                    Solve the trials. Break the layers. Prove that you belong."
+                {/* Message — rendered from server */}
+                <p className="text-blue-100 text-sm leading-relaxed font-mono whitespace-pre-line">
+                    {message}
                 </p>
                 <span className="text-yellow-400/70 mt-3 block font-bold tracking-widest uppercase text-[10px]">
                     — The Architect
