@@ -5,7 +5,9 @@ module.exports = {
         }
 
         const normalized = submission.trim();
-        if (normalized === "10.50.80.5") {
+        // Answer loaded from environment variable
+        const EXPECTED = process.env.ERA3_ANSWER || "10.50.80.5";
+        if (normalized === EXPECTED) {
             return { success: true };
         }
 

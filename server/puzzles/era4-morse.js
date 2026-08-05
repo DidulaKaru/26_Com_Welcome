@@ -5,7 +5,9 @@ module.exports = {
         }
 
         const normalized = submission.trim().toUpperCase();
-        if (normalized === "NCC") {
+        // Answer loaded from environment variable
+        const EXPECTED = (process.env.ERA4_ANSWER || "NCC").toUpperCase();
+        if (normalized === EXPECTED) {
             return { success: true };
         }
 

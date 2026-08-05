@@ -10,6 +10,7 @@ import WelcomeScreen from './components/WelcomeScreen';
 export default function App() {
     const [themeState, setThemeState] = useState("LOADING");
     const [metrics, setMetrics] = useState(null);
+    const [submissionToken, setSubmissionToken] = useState(null);
 
     const fetchState = () => {
         fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/v1/system-state`)
@@ -17,6 +18,7 @@ export default function App() {
             .then(data => {
                 setThemeState(data.currentLayer.theme);
                 if (data.metrics) setMetrics(data.metrics);
+                if (data.submissionToken) setSubmissionToken(data.submissionToken);
             })
             .catch(() => setThemeState("DISCONNECTED"));
     };
@@ -29,15 +31,15 @@ export default function App() {
 
     switch (themeState) {
         case "ERA_MECHANICAL":
-            return <MechanicalView onBreach={fetchState} />;
+            return <MechanicalView onBreach={fetchState} submissionToken={submissionToken} />;
         case "ERA_HASH":
-            return <HashView onBreach={fetchState} />;
+            return <HashView onBreach={fetchState} submissionToken={submissionToken} />;
         case "ERA_ARCHIVE":
-            return <BookView onBreach={fetchState} />;
+            return <BookView onBreach={fetchState} submissionToken={submissionToken} />;
         case "ERA_MORSE":
-            return <MorseView onBreach={fetchState} />;
+            return <MorseView onBreach={fetchState} submissionToken={submissionToken} />;
         case "ERA_OPEN_SOURCE":
-            return <OpenSourceView onBreach={fetchState} />;
+            return <OpenSourceView onBreach={fetchState} submissionToken={submissionToken} />;
         case "ERA_CLOUD_SIEGE":
             return <CloudSiegeView metrics={metrics} onBreach={fetchState} />;
         case "SYSTEM_ACCESSED":

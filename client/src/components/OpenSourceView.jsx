@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-export default function OpenSourceView({ onBreach }) {
+export default function OpenSourceView({ onBreach, submissionToken }) {
     const [dots, setDots] = useState('');
 
     // 1. Simple visual loading animation
@@ -11,22 +11,19 @@ export default function OpenSourceView({ onBreach }) {
         return () => clearInterval(interval);
     }, []);
 
+    // Poll config-status to detect when the PR has been merged.
+    // Era 5 advancement is now handled SERVER-SIDE in index.js.
+    // The client just polls system-state and will pick up the theme change.
     useEffect(() => {
         const checkConfig = setInterval(() => {
             fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/v1/config-status`)
                 .then(res => res.json())
                 .then(data => {
-                    // 1. Conditional gate restored (checks for 200)
+                    // When config values match, the server-side interval in index.js
+                    // will advance activeLayerIndex automatically. We just re-fetch state
+                    // to detect the change via the parent's polling in App.jsx.
                     if (data.attackMode === true && data.rateLimit >= 200) {
-
-                        // 2. Payload values fixed to match the era3-github.js validator
-                        fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/v1/bypass-layer`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                submission: { attackModeEnabled: true, maxRateLimit: 200 }
-                            })
-                        }).then(() => onBreach());
+                        onBreach(); // Triggers fetchState in App.jsx to pick up new theme
                     }
                 })
                 .catch(err => console.error("Waiting for server..."));

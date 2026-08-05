@@ -31,6 +31,7 @@
   "homepage": "https://github.com/DidulaKaru/26_Com_Welcome#readme",
   "dependencies": {
     "cors": "^2.8.6",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.6.2"
   }
 }

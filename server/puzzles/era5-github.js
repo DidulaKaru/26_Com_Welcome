@@ -1,7 +1,9 @@
 module.exports = {
     validate: (submission) => {
-        // Now expects 200 instead of 5000
-        if (submission && submission.attackModeEnabled === true && submission.maxRateLimit >= 200) {
+        // Rate limit threshold loaded from environment variable
+        const threshold = parseInt(process.env.ERA5_RATE_LIMIT) || 200;
+
+        if (submission && submission.attackModeEnabled === true && submission.maxRateLimit >= threshold) {
             return { success: true };
         }
 

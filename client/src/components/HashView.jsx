@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function HashView({ onBreach }) {
+export default function HashView({ onBreach, submissionToken }) {
     const [input, setInput] = useState('');
     const [error, setError] = useState('');
 
@@ -9,7 +9,7 @@ export default function HashView({ onBreach }) {
         fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/v1/bypass-layer`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ submission: input })
+            body: JSON.stringify({ submission: input, submissionToken })
         })
             .then(async res => {
                 const data = await res.json();

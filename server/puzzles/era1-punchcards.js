@@ -6,7 +6,9 @@ module.exports = {
 
         const normalized = submission.trim();
         // Target string from the decoded punch card ASCII binary format
-        if (normalized === "D:\\Nothing\\.git\\config") {
+        // Answer loaded from environment variable to prevent source-code leakage
+        const EXPECTED = process.env.ERA1_ANSWER || "D:\\Nothing\\.git\\config";
+        if (normalized === EXPECTED) {
             return { success: true };
         }
 

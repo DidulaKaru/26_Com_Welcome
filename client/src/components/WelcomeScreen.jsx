@@ -1,6 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function WelcomeScreen() {
+    const [downloading, setDownloading] = useState(false);
+    const [error, setError] = useState('');
+
+    const handleDownload = async () => {
+        setDownloading(true);
+        setError('');
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/v1/claim-reward`);
+            if (!res.ok) {
+                const data = await res.json();
+                setError(data.message || "Download denied.");
+                setDownloading(false);
+                return;
+            }
+            // Convert response to blob and trigger download
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Go Ahead Open This.bat';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+        } catch (err) {
+            setError("Failed to connect to the system.");
+        }
+        setDownloading(false);
+    };
+
     return (
         <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 font-sans text-blue-100 selection:bg-blue-500/30 relative overflow-hidden">
             {/* Background Void/Smoke Effect */}
@@ -60,20 +90,25 @@ export default function WelcomeScreen() {
                     </p>
                 </div>
 
-                {/* Download Button */}
-                <div className="flex justify-center">
+                {/* Download Button — now fetches from protected API endpoint */}
+                <div className="flex flex-col items-center gap-3">
                     <div className="relative group w-full max-w-md">
                         <div className="absolute -inset-0.5 bg-blue-500/30 blur opacity-75 group-hover:opacity-100 transition duration-200"></div>
-                        <a
-                            href="/Go Ahead Open This.bat"
-                            download="Go Ahead Open This.bat"
-                            className="relative flex items-center justify-center gap-4 bg-slate-900 border border-blue-400/80 px-6 py-4 hover:bg-blue-900/40 transition-colors w-full"
+                        <button
+                            onClick={handleDownload}
+                            disabled={downloading}
+                            className="relative flex items-center justify-center gap-4 bg-slate-900 border border-blue-400/80 px-6 py-4 hover:bg-blue-900/40 transition-colors w-full disabled:opacity-50 disabled:cursor-wait"
                         >
                             <span className="text-yellow-400 font-bold tracking-widest uppercase text-xs">
-                                [CLAIM REWARD]
+                                {downloading ? '[DOWNLOADING...]' : '[CLAIM REWARD]'}
                             </span>
-                        </a>
+                        </button>
                     </div>
+                    {error && (
+                        <div className="text-red-500 font-bold text-xs tracking-widest uppercase drop-shadow-[0_0_8px_rgba(239,68,68,1)] animate-pulse">
+                            [ERROR: {error}]
+                        </div>
+                    )}
                 </div>
 
             </div>
