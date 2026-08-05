@@ -8,15 +8,18 @@ export default function ArchitectBanner() {
     const [timeLeft, setTimeLeft] = useState(0);
     const [message, setMessage] = useState('');
 
-    useEffect(() => {
-        // If user already dismissed, don't even fetch
-        if (localStorage.getItem(DISMISS_KEY) === 'true') return;
+    const [messageId, setMessageId] = useState(null);
 
+    useEffect(() => {
         fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/v1/architect-broadcast`)
             .then(res => res.json())
             .then(data => {
                 if (!data.active || !data.message) return;
 
+                // If user already dismissed THIS specific message, don't show
+                if (localStorage.getItem(DISMISS_KEY) === String(data.id)) return;
+
+                setMessageId(data.id);
                 setMessage(data.message);
                 setTimeLeft(data.remainingMs);
                 setVisible(true);
@@ -44,7 +47,9 @@ export default function ArchitectBanner() {
     }, [visible]);
 
     const dismiss = () => {
-        localStorage.setItem(DISMISS_KEY, 'true');
+        if (messageId) {
+            localStorage.setItem(DISMISS_KEY, String(messageId));
+        }
         hide();
     };
 

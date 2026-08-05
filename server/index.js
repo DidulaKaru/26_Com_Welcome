@@ -321,6 +321,7 @@ app.get('/api/v1/architect-broadcast', (req, res) => {
 
     res.json({
         active: true,
+        id: activatedAt,
         message: message,
         expiresAt: expiresAt,
         remainingMs: expiresAt - now
