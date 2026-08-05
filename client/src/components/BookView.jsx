@@ -54,7 +54,7 @@ export default function BookView({ onBreach }) {
                         [THE SYSTEM HAS DETECTED MISSING KNOWLEDGE IN THE <span className="text-green-400 font-bold">'PLAYER'</span>.]
                     </p>
                     <p className="text-blue-300/70 text-xs uppercase tracking-widest leading-loose">
-                        You were handed the foundational manuscript to prepare for this trial, yet you discarded it. A fatal miscalculation. Take the four physical fragments and cross-reference them with the forgotten text. Extract the four page numbers and sequence them chronologically. The resulting coordinates will reveal the target IPv4 network path. Let us see if you can survive your own oversight.
+                        The System has detected a critical deficiency in your foundational knowledge. To proceed, you must gather what was lost. Four random members of your class have just been emailed a fragment of the manuscript. Hunt them down. Cross-reference the texts to extract the exact page numbers, and sequence them chronologically to construct the IPv4 routing gateway. Communication is your only way forward
                     </p>
                 </div>
 

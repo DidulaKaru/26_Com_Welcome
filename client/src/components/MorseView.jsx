@@ -54,7 +54,7 @@ export default function MorseView({ onBreach }) {
                         [THE SYSTEM REQUIRES THE <span className="text-green-400 font-bold">'PLAYER'</span> TO INTERFACE WITH EXTERNAL HARDWARE.]
                     </p>
                     <p className="text-blue-300/70 text-xs uppercase tracking-widest leading-loose">
-                        A physical hardware node awaits your inspection. The Architect has embedded a localized transmission within the circuitry, but the signal remains trapped in the dark. Deploy your highest-tier embedded mage to manipulate the physical matrix and force the signal into the light. Decipher the temporal pulses to extract your next spatial coordinates.
+                        A physical hardware node awaits your inspection. The Architect has embedded a localized transmission within the circuitry, but the signal remains hidden amoungst the noise. Deploy your highest-tier embedded mage to manipulate the physical matrix and force the signal into the light. Decipher the temporal pulses to extract your next spatial coordinates.
                     </p>
                 </div>
 
