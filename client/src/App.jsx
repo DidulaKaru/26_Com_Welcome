@@ -6,6 +6,7 @@ import MorseView from './components/MorseView';
 import OpenSourceView from './components/OpenSourceView';
 import CloudSiegeView from './components/CloudSiegeView';
 import WelcomeScreen from './components/WelcomeScreen';
+import ArchitectBanner from './components/ArchitectBanner';
 
 export default function App() {
     const [themeState, setThemeState] = useState("LOADING");
@@ -29,21 +30,22 @@ export default function App() {
         return () => clearInterval(interval);
     }, []);
 
-    switch (themeState) {
-        case "ERA_MECHANICAL":
-            return <MechanicalView onBreach={fetchState} submissionToken={submissionToken} />;
-        case "ERA_HASH":
-            return <HashView onBreach={fetchState} submissionToken={submissionToken} />;
-        case "ERA_ARCHIVE":
-            return <BookView onBreach={fetchState} submissionToken={submissionToken} />;
-        case "ERA_MORSE":
-            return <MorseView onBreach={fetchState} submissionToken={submissionToken} />;
-        case "ERA_OPEN_SOURCE":
-            return <OpenSourceView onBreach={fetchState} submissionToken={submissionToken} />;
-        case "ERA_CLOUD_SIEGE":
-            return <CloudSiegeView metrics={metrics} onBreach={fetchState} />;
-        case "SYSTEM_ACCESSED":
-            return <WelcomeScreen />;
+    const renderView = () => {
+        switch (themeState) {
+            case "ERA_MECHANICAL":
+                return <MechanicalView onBreach={fetchState} submissionToken={submissionToken} />;
+            case "ERA_HASH":
+                return <HashView onBreach={fetchState} submissionToken={submissionToken} />;
+            case "ERA_ARCHIVE":
+                return <BookView onBreach={fetchState} submissionToken={submissionToken} />;
+            case "ERA_MORSE":
+                return <MorseView onBreach={fetchState} submissionToken={submissionToken} />;
+            case "ERA_OPEN_SOURCE":
+                return <OpenSourceView onBreach={fetchState} submissionToken={submissionToken} />;
+            case "ERA_CLOUD_SIEGE":
+                return <CloudSiegeView metrics={metrics} onBreach={fetchState} />;
+            case "SYSTEM_ACCESSED":
+                return <WelcomeScreen />;
         case "DISCONNECTED":
             return (
                 <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6 font-sans text-red-100 relative overflow-hidden">
@@ -98,5 +100,13 @@ export default function App() {
                     </div>
                 </div>
             );
-    }
+        }
+    };
+
+    return (
+        <>
+            <ArchitectBanner />
+            {renderView()}
+        </>
+    );
 }
