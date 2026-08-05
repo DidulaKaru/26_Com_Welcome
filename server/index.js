@@ -64,7 +64,32 @@ const systemLayers = [
     { id: "unlocked", theme: "SYSTEM_ACCESSED" }
 ];
 
-let activeLayerIndex = 0;
+const STATE_FILE = path.join(__dirname, 'game-state.json');
+
+function loadState() {
+    try {
+        if (fs.existsSync(STATE_FILE)) {
+            const data = fs.readFileSync(STATE_FILE, 'utf8');
+            const state = JSON.parse(data);
+            if (typeof state.activeLayerIndex === 'number') {
+                return state.activeLayerIndex;
+            }
+        }
+    } catch (err) {
+        console.error("Error loading state file:", err);
+    }
+    return 0;
+}
+
+function saveState(index) {
+    try {
+        fs.writeFileSync(STATE_FILE, JSON.stringify({ activeLayerIndex: index }));
+    } catch (err) {
+        console.error("Error saving state file:", err);
+    }
+}
+
+let activeLayerIndex = loadState();
 
 //Go back
 
@@ -111,6 +136,7 @@ setInterval(() => {
 
     if (currentActiveCount >= siegeMetrics.targetThreshold) {
         activeLayerIndex++; // Globally upgrade to SYSTEM_ACCESSED (State 6)
+        saveState(activeLayerIndex);
     }
 }, 1000);
 
@@ -213,6 +239,7 @@ app.post('/api/v1/bypass-layer', bypassLimiter, (req, res) => {
 
         if (evaluation.success) {
             activeLayerIndex++;
+            saveState(activeLayerIndex);
             return res.json({
                 status: "STATE UPGRADED",
                 message: "Security override acknowledged.",
@@ -241,6 +268,7 @@ setInterval(() => {
 
         if (liveConfig.ATTACK_MODE_ENABLED === true && liveConfig.MAX_RATE_LIMIT >= threshold) {
             activeLayerIndex++;
+            saveState(activeLayerIndex);
             console.log("[ERA 5] Configuration override detected. Advancing to next layer.");
         }
     } catch (error) {

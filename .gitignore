@@ -13,6 +13,9 @@ client/dist/
 *.log
 npm-debug.log*
 
+# Game State
+game-state.json
+
 # OS files
 .DS_Store
 Thumbs.db
