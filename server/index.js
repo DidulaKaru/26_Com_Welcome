@@ -95,7 +95,7 @@ let activeLayerIndex = loadState();
 
 // Change this to go back to the first layer
 activeLayerIndex = 6;
-
+// Go to final page
 // Locate this block in server/index.js
 let siegeMetrics = {
     activeConnections: 0,
